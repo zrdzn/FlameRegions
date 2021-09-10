@@ -1,4 +1,4 @@
-package io.github.enixor.minecraft.flameregions.handler;
+package io.github.zrdzn.minecraft.flameregions.handler;
 
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
@@ -8,8 +8,8 @@ import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.FlagValueChangeHandler;
 import com.sk89q.worldguard.session.handler.Handler;
-import io.github.enixor.minecraft.flameregions.FlameRegionsPlugin;
-import io.github.enixor.minecraft.flameregions.configuration.PluginConfiguration;
+import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
+import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

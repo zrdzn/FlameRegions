@@ -1,6 +1,6 @@
-package io.github.enixor.minecraft.flameregions.travel;
+package io.github.zrdzn.minecraft.flameregions.travel;
 
-import io.github.enixor.minecraft.flameregions.FlameRegionsPlugin;
+import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
 import net.citizensnpcs.api.ai.speech.SpeechContext;
 import net.citizensnpcs.api.ai.speech.SpeechController;
 import net.citizensnpcs.api.event.NPCRightClickEvent;

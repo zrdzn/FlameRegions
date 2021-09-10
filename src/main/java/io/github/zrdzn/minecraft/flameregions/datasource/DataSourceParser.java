@@ -1,4 +1,4 @@
-package io.github.enixor.minecraft.flameregions.datasource;
+package io.github.zrdzn.minecraft.flameregions.datasource;
 
 import org.bukkit.configuration.ConfigurationSection;
 

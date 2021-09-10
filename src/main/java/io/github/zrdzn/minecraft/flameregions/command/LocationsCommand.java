@@ -1,6 +1,6 @@
-package io.github.enixor.minecraft.flameregions.command;
+package io.github.zrdzn.minecraft.flameregions.command;
 
-import io.github.enixor.minecraft.flameregions.FlameRegionsPlugin;
+import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

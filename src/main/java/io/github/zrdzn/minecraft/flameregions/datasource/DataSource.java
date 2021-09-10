@@ -1,4 +1,4 @@
-package io.github.enixor.minecraft.flameregions.datasource;
+package io.github.zrdzn.minecraft.flameregions.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

@@ -1,4 +1,4 @@
-package io.github.enixor.minecraft.flameregions.menu;
+package io.github.zrdzn.minecraft.flameregions.menu;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -8,8 +8,8 @@ import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
-import io.github.enixor.minecraft.flameregions.FlameRegionsPlugin;
-import io.github.enixor.minecraft.flameregions.travel.TravelSystem;
+import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
+import io.github.zrdzn.minecraft.flameregions.travel.TravelSystem;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

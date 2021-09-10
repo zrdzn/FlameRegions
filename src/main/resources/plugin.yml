@@ -1,9 +1,9 @@
 name: FlameRegions
 version: ${project.version}
-main: io.github.enixor.flameregions.FlameRegionsPlugin
+main: io.github.zrdzn.flameregions.FlameRegionsPlugin
 api-version: 1.16
 depend: [WorldGuard, Citizens, Essentials]
-authors: [Enixor]
+author: zrdzn
 description: Plugin that is integrated with WorldGuard regions and with database that provides explore system and travelling system.
 commands:
   locations:

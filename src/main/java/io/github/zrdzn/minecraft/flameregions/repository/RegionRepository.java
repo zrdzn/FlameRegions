@@ -1,4 +1,4 @@
-package io.github.enixor.minecraft.flameregions.repository;
+package io.github.zrdzn.minecraft.flameregions.repository;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.zaxxer.hikari.HikariDataSource;

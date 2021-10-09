@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.flameregions.configuration;
+package io.github.zrdzn.minecraft.flameregions.travel.configuration;
 
 public record TravelConfiguration(boolean priceMultiplierEnabled, double priceMultiplier) {
 

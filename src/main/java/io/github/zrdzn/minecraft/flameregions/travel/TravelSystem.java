@@ -4,7 +4,7 @@ import com.earth2me.essentials.Trade;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
-import io.github.zrdzn.minecraft.flameregions.configuration.TravelConfiguration;
+import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfiguration;
 import net.ess3.api.IEssentials;
 import net.ess3.api.IUser;
 import org.bukkit.Location;

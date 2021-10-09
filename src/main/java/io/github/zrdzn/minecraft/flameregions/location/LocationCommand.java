@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.flameregions.command;
+package io.github.zrdzn.minecraft.flameregions.location;
 
 import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
 import org.bukkit.command.Command;
@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record LocationsCommand(FlameRegionsPlugin plugin) implements CommandExecutor {
+public record LocationCommand(FlameRegionsPlugin plugin) implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {

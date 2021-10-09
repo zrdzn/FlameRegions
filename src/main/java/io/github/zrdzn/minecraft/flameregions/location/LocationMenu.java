@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.flameregions.menu;
+package io.github.zrdzn.minecraft.flameregions.location;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;

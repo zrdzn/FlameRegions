@@ -7,15 +7,15 @@ import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.session.SessionManager;
 import com.zaxxer.hikari.HikariDataSource;
-import io.github.zrdzn.minecraft.flameregions.command.LocationsCommand;
+import io.github.zrdzn.minecraft.flameregions.location.LocationCommand;
 import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfiguration;
 import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfigurationParser;
-import io.github.zrdzn.minecraft.flameregions.configuration.TravelConfiguration;
-import io.github.zrdzn.minecraft.flameregions.configuration.TravelConfigurationParser;
+import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfiguration;
+import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfigurationParser;
 import io.github.zrdzn.minecraft.flameregions.datasource.DataSourceParser;
-import io.github.zrdzn.minecraft.flameregions.handler.RegionEnterHandler;
-import io.github.zrdzn.minecraft.flameregions.menu.LocationMenu;
-import io.github.zrdzn.minecraft.flameregions.repository.RegionRepository;
+import io.github.zrdzn.minecraft.flameregions.region.RegionEnterHandler;
+import io.github.zrdzn.minecraft.flameregions.location.LocationMenu;
+import io.github.zrdzn.minecraft.flameregions.region.RegionRepository;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelSystem;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelTrait;
 import net.citizensnpcs.api.CitizensAPI;
@@ -110,7 +110,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
         PluginConfigurationParser pluginConfigurationParser = new PluginConfigurationParser();
         this.pluginConfiguration = pluginConfigurationParser.parse(configuration);
 
-        this.getCommand("locations").setExecutor(new LocationsCommand(this));
+        this.getCommand("locations").setExecutor(new LocationCommand(this));
 
         SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
         sessionManager.registerHandler(RegionEnterHandler.FACTORY, null);

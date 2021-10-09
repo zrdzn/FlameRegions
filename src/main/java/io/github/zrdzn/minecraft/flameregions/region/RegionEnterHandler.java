@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.flameregions.handler;
+package io.github.zrdzn.minecraft.flameregions.region;
 
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;

@@ -46,6 +46,7 @@ public class TravelTrait extends Trait {
         speechContext.setTalker(npc.getEntity());
 
         Player player = event.getClicker();
+
         speechContext.addRecipient((Entity) player);
 
         Locale locale = player.locale();
@@ -53,6 +54,7 @@ public class TravelTrait extends Trait {
         speechContext.setMessage(this.service.getString(locale,
                 "npc.dialog.before_travel_" + ThreadLocalRandom.current().nextInt(1, 4),
                 npc.getName()));
+
         speechController.speak(speechContext);
 
         if (!this.menu.show(player.getUniqueId(), true, npc)) {
@@ -61,4 +63,5 @@ public class TravelTrait extends Trait {
             speechController.speak(speechContext);
         }
     }
+
 }

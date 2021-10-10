@@ -58,6 +58,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
         if (databaseSection == null) {
             this.logger.error("Section database does not exist.");
             this.pluginManager.disablePlugin(this);
+
             return;
         }
 
@@ -66,6 +67,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
         if (dataSource == null) {
             this.logger.error("Something went wrong while connecting to database. Check your database configuration and restart your server after correcting it.");
             this.pluginManager.disablePlugin(this);
+
             return;
         }
 
@@ -88,7 +90,9 @@ public class FlameRegionsPlugin extends JavaPlugin {
         if (travelSection == null) {
             this.logger.error("Section travel does not exist.");
             this.pluginManager.disablePlugin(this);
+
             return;
+
         }
 
         TravelConfiguration travelConfiguration = new TravelConfigurationParser().parse(travelSection);

@@ -11,7 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public record RegionRepository(Server server, HikariDataSource dataSource) {
+public class RegionRepository {
+
+    private final Server server;
+    private final HikariDataSource dataSource;
+
+    public RegionRepository(Server server, HikariDataSource dataSource) {
+        this.server = server;
+        this.dataSource = dataSource;
+    }
 
     public boolean addExploredRegionToPlayer(UUID playerId, ProtectedRegion region) {
         Player player = this.server.getPlayer(playerId);

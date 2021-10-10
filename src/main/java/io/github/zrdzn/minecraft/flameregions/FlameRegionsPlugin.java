@@ -80,11 +80,10 @@ public class FlameRegionsPlugin extends JavaPlugin {
             exception.printStackTrace();
         }
 
-        this.regionRepository = new RegionRepository(this.server, this.dataSource);
+        RegionRepository regionRepository = new RegionRepository(this.server, dataSource);
 
         MessageService messageService = new MessageService(this.logger, this.server, this.bundleMap);
 
-        TravelConfigurationParser travelConfigurationParser = new TravelConfigurationParser();
         ConfigurationSection travelSection = configuration.getConfigurationSection("travel");
         if (travelSection == null) {
             this.logger.error("Section travel does not exist.");

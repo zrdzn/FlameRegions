@@ -7,21 +7,21 @@ import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.session.SessionManager;
 import com.zaxxer.hikari.HikariDataSource;
-import io.github.zrdzn.minecraft.flameregions.location.LocationCommand;
 import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfiguration;
 import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfigurationParser;
+import io.github.zrdzn.minecraft.flameregions.datasource.DataSourceParser;
+import io.github.zrdzn.minecraft.flameregions.location.LocationCommand;
+import io.github.zrdzn.minecraft.flameregions.location.LocationMenu;
+import io.github.zrdzn.minecraft.flameregions.message.MessageService;
+import io.github.zrdzn.minecraft.flameregions.region.RegionEnterHandler;
+import io.github.zrdzn.minecraft.flameregions.region.RegionRepository;
+import io.github.zrdzn.minecraft.flameregions.travel.TravelService;
+import io.github.zrdzn.minecraft.flameregions.travel.TravelTrait;
 import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfiguration;
 import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfigurationParser;
-import io.github.zrdzn.minecraft.flameregions.datasource.DataSourceParser;
-import io.github.zrdzn.minecraft.flameregions.region.RegionEnterHandler;
-import io.github.zrdzn.minecraft.flameregions.location.LocationMenu;
-import io.github.zrdzn.minecraft.flameregions.region.RegionRepository;
-import io.github.zrdzn.minecraft.flameregions.travel.TravelSystem;
-import io.github.zrdzn.minecraft.flameregions.travel.TravelTrait;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.trait.TraitInfo;
 import net.ess3.api.IEssentials;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,25 +43,9 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
     private final Server server = this.getServer();
     private final PluginManager pluginManager = this.server.getPluginManager();
-    private final Logger logger = this.getLogger();
-    private final TravelSystem travelSystem = new TravelSystem(this);
-    private final LocationMenu menu = new LocationMenu(this);
-    private final Map<String, ResourceBundle> bundleMap = new HashMap<>();
-
-    private HikariDataSource dataSource;
-    private RegionRepository regionRepository;
-    private IEssentials essentialsApi;
-    private TravelConfiguration travelConfiguration;
-    private PluginConfiguration pluginConfiguration;
-
-    public static FlameRegionsPlugin getInstance() {
-        return instance;
-    }
 
     @Override
     public void onEnable() {
-        instance = this;
-
         this.saveDefaultConfig();
         this.loadBundles();
 
@@ -104,17 +88,24 @@ public class FlameRegionsPlugin extends JavaPlugin {
             this.pluginManager.disablePlugin(this);
             return;
         }
-        this.travelConfiguration = travelConfigurationParser.parse(travelSection);
 
-        PluginConfigurationParser pluginConfigurationParser = new PluginConfigurationParser();
-        this.pluginConfiguration = pluginConfigurationParser.parse(configuration);
+        TravelConfiguration travelConfiguration = new TravelConfigurationParser().parse(travelSection);
 
-        this.getCommand("locations").setExecutor(new LocationCommand(this));
+        PluginConfiguration pluginConfiguration = new PluginConfigurationParser().parse(configuration);
+
+        IEssentials essentialsApi = (IEssentials) this.pluginManager.getPlugin("Essentials");
+
+        TravelService travelService = new TravelService(this.logger, travelConfiguration, essentialsApi);
+
+        LocationMenu locationMenu = new LocationMenu(this.server, messageService, pluginConfiguration, regionRepository, travelService);
+
+        this.getCommand("locations").setExecutor(new LocationCommand(this.logger, locationMenu, messageService));
 
         SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
-        sessionManager.registerHandler(RegionEnterHandler.FACTORY, null);
+        sessionManager.registerHandler(new RegionEnterHandler.Factory(pluginConfiguration, regionRepository, messageService), null);
 
-        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(TravelTrait.class).withName("qr-trait-travel"));
+        TravelTrait travelTrait = new TravelTrait(this.logger, messageService, locationMenu);
+        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(travelTrait.getClass()).withName("fr-trait-travel"));
     }
 
     @Override
@@ -131,53 +122,6 @@ public class FlameRegionsPlugin extends JavaPlugin {
         }
     }
 
-    public HikariDataSource getDataSource() {
-        return this.dataSource;
-    }
-
-    public IEssentials getEssentialsApi() {
-        return this.essentialsApi;
-    }
-
-    public RegionRepository getRegionRepository() {
-        return this.regionRepository;
-    }
-
-    public TravelSystem getTravelSystem() {
-        return this.travelSystem;
-    }
-
-    public LocationMenu getMenu() {
-        return this.menu;
-    }
-
-    public TravelConfiguration getTravelConfiguration() {
-        return this.travelConfiguration;
-    }
-
-    public PluginConfiguration getPluginConfiguration() {
-        return this.pluginConfiguration;
-    }
-
-    public String translateToString(String locale, String key, Object... replacements) {
-        return String.format(this.getResourceBundle(locale).getString(key), replacements);
-    }
-
-    public Component translateToComponent(String locale, String key, Object... replacements) {
-        return Component.text(this.translateToString(locale, key, replacements));
-    }
-
-    public List<Component> translateToComponentList(String locale, String key, Object... replacements) {
-        ResourceBundle bundle = this.getResourceBundle(locale);
-
-        List<Component> componentList = new ArrayList<>();
-        Arrays.stream(this.getResourceBundle(locale).getStringArray(key))
-                .forEach(message -> componentList.add(Component.text(String.format(bundle.getString(key), replacements))));
-
-        return componentList;
-    }
-
-    // TODO Store Locale as object and not string.
     private void loadBundles() {
         String baseName = "locale/locale";
         this.bundleMap.put("en_us", ResourceBundle.getBundle(baseName, Locale.forLanguageTag("en-US")));

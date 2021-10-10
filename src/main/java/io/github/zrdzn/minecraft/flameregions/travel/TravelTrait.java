@@ -1,6 +1,7 @@
 package io.github.zrdzn.minecraft.flameregions.travel;
 
-import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
+import io.github.zrdzn.minecraft.flameregions.location.LocationMenu;
+import io.github.zrdzn.minecraft.flameregions.message.MessageService;
 import net.citizensnpcs.api.ai.speech.SpeechContext;
 import net.citizensnpcs.api.ai.speech.SpeechController;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -15,15 +16,19 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TravelTrait extends Trait {
 
-    public TravelTrait() {
+    private final Logger logger;
+    private final MessageService service;
+    private final LocationMenu menu;
+
+    public TravelTrait(Logger logger, MessageService service, LocationMenu menu) {
         super("fr-trait-travel");
+        this.logger = logger;
+        this.service = service;
+        this.menu = menu;
     }
 
     @EventHandler
     public void onClick(NPCRightClickEvent event) {
-        FlameRegionsPlugin plugin = FlameRegionsPlugin.getInstance();
-        SpeechContext speechContext = new SpeechContext();
-
         NPC npc = event.getNPC();
         if (npc == null) {
             return;
@@ -34,6 +39,8 @@ public class TravelTrait extends Trait {
         }
 
         SpeechController speechController = npc.getDefaultSpeechController();
+
+        SpeechContext speechContext = new SpeechContext();
 
         speechContext.setTalker(npc.getEntity());
 

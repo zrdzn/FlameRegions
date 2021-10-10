@@ -9,11 +9,15 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
-import io.github.zrdzn.minecraft.flameregions.travel.TravelSystem;
+import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfiguration;
+import io.github.zrdzn.minecraft.flameregions.message.MessageService;
+import io.github.zrdzn.minecraft.flameregions.region.RegionRepository;
+import io.github.zrdzn.minecraft.flameregions.travel.TravelService;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,12 +28,21 @@ import java.util.UUID;
 
 public class LocationMenu {
 
-    private final FlameRegionsPlugin plugin;
+    private final Server server;
+    private final MessageService messageService;
+    private final PluginConfiguration configuration;
+    private final RegionRepository repository;
+    private final TravelService travelService;
 
     private boolean isTravelItem;
 
-    public LocationMenu(FlameRegionsPlugin plugin) {
-        this.plugin = plugin;
+    public LocationMenu(Server server, MessageService messageService, PluginConfiguration configuration, RegionRepository repository,
+                        TravelService travelService) {
+        this.server = server;
+        this.messageService = messageService;
+        this.configuration = configuration;
+        this.repository = repository;
+        this.travelService = travelService;
     }
 
     /**
@@ -38,7 +51,7 @@ public class LocationMenu {
      * it's menu for checking places that you've had already discovered.
      */
     public boolean show(UUID playerId, boolean logic, Object... logicParameters) {
-        Player player = this.plugin.getServer().getPlayer(playerId);
+        Player player = this.server.getPlayer(playerId);
         if (player == null) {
             return false;
         }
@@ -97,20 +110,20 @@ public class LocationMenu {
             String displayNameFlag = protectedRegion.getFlag(FlameRegionsPlugin.ENTER_FLAG);
             displayName = displayNameFlag == null ? protectedRegionId : ChatColor.translateAlternateColorCodes('&', displayNameFlag);
 
-            if (!protectedRegionId.startsWith(this.plugin.getPluginConfiguration().getRegionsPrefix())) {
+            if (!protectedRegionId.startsWith(this.configuration.getRegionsPrefix())) {
                 continue;
             }
 
-            if (this.plugin.getRegionRepository().hasPlayerExplored(player.getUniqueId(), protectedRegion)) {
+            if (this.repository.hasPlayerExplored(player.getUniqueId(), protectedRegion)) {
                 item = new ItemStack(Material.FILLED_MAP);
 
                 if (logic && npcLocation != null) {
-                    if (travelSystem.getTravelLocation(protectedRegion) == null) {
+                    if (this.travelService.getTravelLocation(protectedRegion) == null) {
                         continue;
                     }
 
-                    distance = travelSystem.calculateDistanceToRegion(npcLocation, protectedRegion);
-                    price = Math.round(travelSystem.calculatePrice(distance));
+                    distance = this.travelService.calculateDistanceToRegion(npcLocation, protectedRegion);
+                    price = Math.round(this.travelService.calculatePrice(distance));
 
                     item.lore(this.plugin.translateToComponentList(locale,
                             "menu.region.explored_lore.npc", Double.toString(price), Long.toString(Math.round(distance))));
@@ -123,7 +136,7 @@ public class LocationMenu {
                 item = new ItemStack(Material.MAP);
 
                 if (logic && npcLocation != null) {
-                    if (travelSystem.getTravelLocation(protectedRegion) == null) {
+                    if (this.travelService.getTravelLocation(protectedRegion) == null) {
                         continue;
                     }
 
@@ -144,7 +157,7 @@ public class LocationMenu {
 
             menu.getFiller().fillBetweenPoints(1, 1, 3, 9, new GuiItem(item, event -> {
                 if (logic && this.isTravelItem) {
-                    travelSystem.travelPlayer(playerId, protectedRegion, finalPrice);
+                    this.travelService.travelPlayer(playerId, protectedRegion, finalPrice);
                 }
             }));
         }

@@ -16,14 +16,17 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
-public class TravelSystem {
+public class TravelService {
 
-    private final FlameRegionsPlugin plugin;
     private final Logger logger;
+    private final TravelConfiguration travelConfiguration;
+    private final IEssentials essentialsApi;
 
-    public TravelSystem(FlameRegionsPlugin plugin) {
-        this.plugin = plugin;
-        this.logger = plugin.getLogger();
+    public TravelService(Logger logger, TravelConfiguration travelConfiguration, IEssentials essentialsApi) {
+        this.logger = logger;
+        this.travelConfiguration = travelConfiguration;
+        this.essentialsApi = essentialsApi;
+
     }
 
     public Location getTravelLocation(ProtectedRegion protectedRegion) {
@@ -61,9 +64,9 @@ public class TravelSystem {
             return;
         }
 
-        IUser user = essentialsApi.getUser(playerId);
+        IUser user = this.essentialsApi.getUser(playerId);
         BigDecimal tradePrice = new BigDecimal(price, MathContext.DECIMAL64);
-        Trade trade = new Trade(tradePrice, essentialsApi);
+        Trade trade = new Trade(tradePrice, this.essentialsApi);
         CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
 
         user.getAsyncTeleport().teleportPlayer(user, travelLocation, trade, PlayerTeleportEvent.TeleportCause.PLUGIN, completableFuture);

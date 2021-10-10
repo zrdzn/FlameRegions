@@ -19,7 +19,9 @@ import java.util.Set;
 
 public class RegionEnterHandler extends FlagValueChangeHandler<String> {
 
-    public static final Factory FACTORY = new Factory();
+    private PluginConfiguration configuration;
+    private RegionRepository repository;
+    private MessageService service;
 
     protected RegionEnterHandler(Session session) {
         super(session, FlameRegionsPlugin.ENTER_FLAG);
@@ -28,12 +30,9 @@ public class RegionEnterHandler extends FlagValueChangeHandler<String> {
     @Override
     public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet,
                                    Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
-        FlameRegionsPlugin plugin = FlameRegionsPlugin.getInstance();
-        PluginConfiguration pluginConfiguration = plugin.getPluginConfiguration();
-
         for (ProtectedRegion protectedRegion : toSet.getRegions()) {
             String protectedRegionId = protectedRegion.getId();
-            if (!protectedRegionId.startsWith(pluginConfiguration.getRegionsPrefix())) {
+            if (!protectedRegionId.startsWith(this.configuration.getRegionsPrefix())) {
                 continue;
             }
 
@@ -49,7 +48,9 @@ public class RegionEnterHandler extends FlagValueChangeHandler<String> {
                 regionName = ChatColor.translateAlternateColorCodes('&', regionName);
             }
 
-            if (plugin.getRegionRepository().addExploredRegionToPlayer(bukkitPlayer.getUniqueId(), protectedRegion)) {
+            bukkitPlayer.sendMessage(regionName);
+
+            if (this.repository.addExploredRegionToPlayer(bukkitPlayer.getUniqueId(), protectedRegion)) {
                 bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
 
                 bukkitPlayer.sendTitle(plugin.translateToString(bukkitPlayer.getLocale(), "title.header", regionName),
@@ -77,9 +78,27 @@ public class RegionEnterHandler extends FlagValueChangeHandler<String> {
     }
 
     public static class Factory extends Handler.Factory<RegionEnterHandler> {
-        public RegionEnterHandler create(final Session session) {
-            return new RegionEnterHandler(session);
+
+        private final PluginConfiguration configuration;
+        private final RegionRepository repository;
+        private final MessageService service;
+
+        public Factory(PluginConfiguration configuration, RegionRepository repository, MessageService service) {
+            this.configuration = configuration;
+            this.repository = repository;
+            this.service = service;
         }
+
+        public RegionEnterHandler create(Session session) {
+            RegionEnterHandler regionEnterHandler = new RegionEnterHandler(session);
+
+            regionEnterHandler.configuration = this.configuration;
+            regionEnterHandler.repository = this.repository;
+            regionEnterHandler.service = this.service;
+
+            return regionEnterHandler;
+        }
+
     }
 
 }

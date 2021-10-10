@@ -26,7 +26,7 @@ public class LocationCommand implements CommandExecutor {
             return true;
         }
 
-        if (this.plugin.getMenu().show(player.getUniqueId(), false)) {
+        if (this.menu.show(player.getUniqueId(), false)) {
             return true;
         }
 

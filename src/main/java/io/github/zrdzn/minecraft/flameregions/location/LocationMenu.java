@@ -117,7 +117,7 @@ public class LocationMenu {
                 item = new ItemStack(Material.FILLED_MAP);
 
                 if (logic && npcLocation != null) {
-                    if (this.travelService.getTravelLocation(protectedRegion) == null) {
+                    if (this.travelService.getTravelLocation(protectedRegion).isEmpty()) {
                         continue;
                     }
 
@@ -135,7 +135,7 @@ public class LocationMenu {
                 item = new ItemStack(Material.MAP);
 
                 if (logic && npcLocation != null) {
-                    if (this.travelService.getTravelLocation(protectedRegion) == null) {
+                    if (this.travelService.getTravelLocation(protectedRegion).isEmpty()) {
                         continue;
                     }
 

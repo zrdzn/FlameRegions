@@ -13,9 +13,9 @@ import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
 
 public class TravelService {
 
@@ -30,38 +30,32 @@ public class TravelService {
 
     }
 
-    public Location getTravelLocation(ProtectedRegion protectedRegion) {
+    public Optional<Location> getTravelLocation(ProtectedRegion protectedRegion) {
         com.sk89q.worldedit.util.Location location = protectedRegion.getFlag(FlameRegionsPlugin.TRAVEL_LOCATION_FLAG);
-
-        return location == null ? null : BukkitAdapter.adapt(location);
+        return location == null ? Optional.empty() : Optional.of(BukkitAdapter.adapt(location));
     }
 
     // TODO Add no-charge option for players with flameregions.charge.bypass permission.
     public double calculatePrice(double distance) {
-        TravelConfiguration travelConfiguration = this.plugin.getTravelConfiguration();
-
-        double multiplier = travelConfiguration.isPriceMultiplierEnabled() ? travelConfiguration.getPriceMultiplier() : 1.0D;
-
+        double multiplier = this.travelConfiguration.isPriceMultiplierEnabled() ? this.travelConfiguration.getPriceMultiplier() : 1.0D;
         return distance * Math.pow(multiplier, 2) * 3 / 10;
     }
 
     public double calculateDistanceToRegion(Location current, ProtectedRegion protectedRegion) {
-        Location destination = this.getTravelLocation(protectedRegion);
-        if (destination == null) {
-            this.logger.warning("Destination location is null for " + protectedRegion.getId() + ".");
+        Optional<Location> destination = this.getTravelLocation(protectedRegion);
+        if (destination.isEmpty()) {
+            this.logger.warn("Destination location is null for {}.", protectedRegion.getId());
             return 0.0D;
         }
 
-        return current.distance(destination);
+        return current.distance(destination.get());
     }
 
     // TODO Use Vault API and custom teleports if Essentials is disabled in config or not found on the server.
     public void travelPlayer(UUID playerId, ProtectedRegion protectedRegion, double price) {
-        IEssentials essentialsApi = this.plugin.getEssentialsApi();
-
-        Location travelLocation = this.getTravelLocation(protectedRegion);
-        if (travelLocation == null) {
-            this.logger.severe("Travel vector is null.");
+        Optional<Location> location = this.getTravelLocation(protectedRegion);
+        if (location.isEmpty()) {
+            this.logger.error("Travel vector is null.");
             return;
         }
 
@@ -70,7 +64,7 @@ public class TravelService {
         Trade trade = new Trade(tradePrice, this.essentialsApi);
         CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
 
-        user.getAsyncTeleport().teleportPlayer(user, travelLocation, trade, PlayerTeleportEvent.TeleportCause.PLUGIN, completableFuture);
+        user.getAsyncTeleport().teleportPlayer(user, location.get(), trade, PlayerTeleportEvent.TeleportCause.PLUGIN, completableFuture);
     }
 
 }

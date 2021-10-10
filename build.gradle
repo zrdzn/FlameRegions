@@ -8,8 +8,10 @@ plugins {
 group = 'io.github.zrdzn.minecraft'
 version = '1.0'
 
-sourceCompatibility = '1.16'
-targetCompatibility = '1.16'
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
+
+compileJava.options.encoding = "UTF-8"
 
 repositories {
     mavenCentral()

@@ -9,6 +9,7 @@ import net.ess3.api.IEssentials;
 import net.ess3.api.IUser;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

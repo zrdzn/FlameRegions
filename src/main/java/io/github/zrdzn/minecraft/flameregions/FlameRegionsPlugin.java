@@ -27,20 +27,23 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class FlameRegionsPlugin extends JavaPlugin {
 
     public static final StringFlag ENTER_FLAG = new StringFlag("fr-enter");
     public static final LocationFlag TRAVEL_LOCATION_FLAG = new LocationFlag("fr-travel-location");
 
-    private static FlameRegionsPlugin instance = null;
-
+    private final Map<Locale, ResourceBundle> bundleMap = new HashMap<>();
+    private final Logger logger = this.getSLF4JLogger();
     private final Server server = this.getServer();
     private final PluginManager pluginManager = this.server.getPluginManager();
 
@@ -53,15 +56,15 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         ConfigurationSection databaseSection = configuration.getConfigurationSection("database");
         if (databaseSection == null) {
-            this.logger.severe("Section database does not exist.");
+            this.logger.error("Section database does not exist.");
             this.pluginManager.disablePlugin(this);
             return;
         }
 
         HikariDataSource dataSource = new DataSourceParser().parse(databaseSection);
 
-        if (this.dataSource == null) {
-            this.logger.severe("Something went wrong while connecting to database. Check your database configuration and restart your server after correcting it.");
+        if (dataSource == null) {
+            this.logger.error("Something went wrong while connecting to database. Check your database configuration and restart your server after correcting it.");
             this.pluginManager.disablePlugin(this);
             return;
         }
@@ -79,12 +82,12 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         this.regionRepository = new RegionRepository(this.server, this.dataSource);
 
-        this.essentialsApi = (IEssentials) this.pluginManager.getPlugin("Essentials");
+        MessageService messageService = new MessageService(this.logger, this.server, this.bundleMap);
 
         TravelConfigurationParser travelConfigurationParser = new TravelConfigurationParser();
         ConfigurationSection travelSection = configuration.getConfigurationSection("travel");
         if (travelSection == null) {
-            this.logger.severe("Section travel does not exist.");
+            this.logger.error("Section travel does not exist.");
             this.pluginManager.disablePlugin(this);
             return;
         }
@@ -116,7 +119,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
             flagRegistry.register(ENTER_FLAG);
             flagRegistry.register(TRAVEL_LOCATION_FLAG);
         } catch (FlagConflictException exception) {
-            this.logger.severe("Failed to register custom flags, check if this custom flag already exists and change it.");
+            this.logger.error("Failed to register custom flags, check if this custom flag already exists and change it.");
             exception.printStackTrace();
             this.pluginManager.disablePlugin(this);
         }
@@ -124,17 +127,8 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
     private void loadBundles() {
         String baseName = "locale/locale";
-        this.bundleMap.put("en_us", ResourceBundle.getBundle(baseName, Locale.forLanguageTag("en-US")));
-        this.bundleMap.put("pl_pl", ResourceBundle.getBundle(baseName, Locale.forLanguageTag("pl-PL")));
-        this.bundleMap.put("de_de", ResourceBundle.getBundle(baseName, Locale.forLanguageTag("de-DE")));
-    }
-
-    private ResourceBundle getResourceBundle(String locale) {
-        ResourceBundle bundle = this.bundleMap.get(locale);
-        if (bundle == null) {
-            bundle = ResourceBundle.getBundle("keys/keys", Locale.ENGLISH);
-        }
-        return bundle;
+        this.bundleMap.put(Locale.forLanguageTag("en-US"), ResourceBundle.getBundle(baseName, Locale.forLanguageTag("en-US")));
+        this.bundleMap.put(Locale.forLanguageTag("pl-PL"), ResourceBundle.getBundle(baseName, Locale.forLanguageTag("pl-PL")));
     }
 
 }

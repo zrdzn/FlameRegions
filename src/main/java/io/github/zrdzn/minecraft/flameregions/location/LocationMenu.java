@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -56,30 +57,28 @@ public class LocationMenu {
             return false;
         }
 
-        TravelSystem travelSystem = this.plugin.getTravelSystem();
-
-        String locale = player.getLocale();
+        Locale locale = player.locale();
 
         PaginatedGui menu = Gui.paginated()
-                .title(this.plugin.translateToComponent(locale, logic ? "menu.title.npc" : "menu.title.command"))
+                .title(this.messageService.getComponent(locale, logic ? "menu.title.npc" : "menu.title.command"))
                 .rows(4)
                 .create();
 
         menu.setDefaultClickAction(event -> event.setCancelled(true));
 
         menu.setItem(4, 1, ItemBuilder.from(Material.PAPER)
-                .name(this.plugin.translateToComponent(locale, "menu.pagination.left.display_name"))
-                .lore(this.plugin.translateToComponentList(locale, "menu.pagination.left.lore"))
+                .name(this.messageService.getComponent(locale, "menu.pagination.left.display_name"))
+                .lore(this.messageService.getComponentList(locale, "menu.pagination.left.lore"))
                 .asGuiItem(event -> menu.previous()));
 
         menu.setItem(4, 9, ItemBuilder.from(Material.PAPER)
-                .name(this.plugin.translateToComponent(locale, "menu.pagination.right.display_name"))
-                .lore(this.plugin.translateToComponentList(locale, "menu.pagination.right.lore"))
+                .name(this.messageService.getComponent(locale, "menu.pagination.right.display_name"))
+                .lore(this.messageService.getComponentList(locale, "menu.pagination.right.lore"))
                 .asGuiItem(event -> menu.next()));
 
         menu.setItem(4, 5, ItemBuilder.from(Material.BARRIER)
-                .name(this.plugin.translateToComponent(locale, "menu.close.display_name"))
-                .lore(this.plugin.translateToComponentList(locale, "menu.close.lore"))
+                .name(this.messageService.getComponent(locale, "menu.close.display_name"))
+                .lore(this.messageService.getComponentList(locale, "menu.close.lore"))
                 .asGuiItem(event -> menu.close(player)));
 
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
@@ -125,12 +124,12 @@ public class LocationMenu {
                     distance = this.travelService.calculateDistanceToRegion(npcLocation, protectedRegion);
                     price = Math.round(this.travelService.calculatePrice(distance));
 
-                    item.lore(this.plugin.translateToComponentList(locale,
-                            "menu.region.explored_lore.npc", Double.toString(price), Long.toString(Math.round(distance))));
+                    item.lore(this.messageService.getComponentList(locale, "menu.region.explored_lore.npc",
+                            Double.toString(price), Long.toString(Math.round(distance))));
 
                     this.isTravelItem = true;
                 } else {
-                    item.lore(this.plugin.translateToComponentList(locale, "menu.region.explored_lore.command"));
+                    item.lore(this.messageService.getComponentList(locale, "menu.region.explored_lore.command"));
                 }
             } else {
                 item = new ItemStack(Material.MAP);
@@ -140,17 +139,17 @@ public class LocationMenu {
                         continue;
                     }
 
-                    item.lore(this.plugin.translateToComponentList(locale, "menu.region.not_explored_lore.npc"));
+                    item.lore(this.messageService.getComponentList(locale, "menu.region.not_explored_lore.npc"));
 
                     this.isTravelItem = false;
                 } else {
-                    item.lore(this.plugin.translateToComponentList(locale, "menu.region.not_explored_lore.command"));
+                    item.lore(this.messageService.getComponentList(locale, "menu.region.not_explored_lore.command"));
                 }
             }
 
             ItemMeta itemMeta = item.getItemMeta();
 
-            itemMeta.displayName(this.plugin.translateToComponent(locale, "menu.region.display_name", displayName));
+            itemMeta.displayName(this.messageService.getComponent(locale, "menu.region.display_name", displayName));
             item.setItemMeta(itemMeta);
 
             double finalPrice = price;

@@ -1,6 +1,6 @@
 package io.github.zrdzn.minecraft.flameregions.location;
 
-import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
+import io.github.zrdzn.minecraft.flameregions.message.MessageService;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,8 +30,9 @@ public class LocationCommand implements CommandExecutor {
             return true;
         }
 
-        this.plugin.getLogger().warning("Could not show location-menu to " + player.getName());
-        player.sendMessage(this.plugin.translateToComponent(player.getLocale(), "menu.open_error"));
+        this.logger.warn("Could not show location-menu to {}.", player.getName());
+
+        this.service.sendMessage(player.getUniqueId(), "menu.open_error");
 
         return true;
     }

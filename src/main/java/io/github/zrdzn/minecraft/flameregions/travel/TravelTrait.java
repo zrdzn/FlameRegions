@@ -10,8 +10,9 @@ import net.citizensnpcs.api.trait.Trait;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.slf4j.Logger;
 
-import java.util.UUID;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TravelTrait extends Trait {
@@ -47,16 +48,16 @@ public class TravelTrait extends Trait {
         Player player = event.getClicker();
         speechContext.addRecipient((Entity) player);
 
-        UUID playerId = player.getUniqueId();
+        Locale locale = player.locale();
 
-        speechContext.setMessage(plugin.translateToString(player.getLocale(),
+        speechContext.setMessage(this.service.getString(locale,
                 "npc.dialog.before_travel_" + ThreadLocalRandom.current().nextInt(1, 4),
                 npc.getName()));
         speechController.speak(speechContext);
 
-        if (!plugin.getMenu().show(playerId, true, npc)) {
-            plugin.getLogger().warning("Could not show location-menu to " + player.getName());
-            speechContext.setMessage(plugin.translateToString(player.getLocale(), "menu.open_error"));
+        if (!this.menu.show(player.getUniqueId(), true, npc)) {
+            this.logger.warn("Could not show location-menu to {}.", player.getName());
+            speechContext.setMessage(this.service.getString(locale, "menu.open_error"));
             speechController.speak(speechContext);
         }
     }

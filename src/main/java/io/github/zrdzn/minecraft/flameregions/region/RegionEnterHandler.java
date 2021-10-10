@@ -10,11 +10,14 @@ import com.sk89q.worldguard.session.handler.FlagValueChangeHandler;
 import com.sk89q.worldguard.session.handler.Handler;
 import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
 import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfiguration;
+import io.github.zrdzn.minecraft.flameregions.message.MessageService;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.Locale;
 import java.util.Set;
 
 public class RegionEnterHandler extends FlagValueChangeHandler<String> {
@@ -53,9 +56,10 @@ public class RegionEnterHandler extends FlagValueChangeHandler<String> {
             if (this.repository.addExploredRegionToPlayer(bukkitPlayer.getUniqueId(), protectedRegion)) {
                 bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
 
-                bukkitPlayer.sendTitle(plugin.translateToString(bukkitPlayer.getLocale(), "title.header", regionName),
-                        plugin.translateToString(bukkitPlayer.getLocale(), "title.footer", regionName),
-                        10, 70, 20);
+                Locale locale = bukkitPlayer.locale();
+
+                bukkitPlayer.showTitle(Title.title(this.service.getComponent(locale, "title.header", regionName),
+                        this.service.getComponent(locale, "title.footer", regionName)));
             }
 
         }

@@ -1,12 +1,10 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 group = 'io.github.zrdzn.minecraft'
-version = '1.0'
+version = '1.0.0'
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16

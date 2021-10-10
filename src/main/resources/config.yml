@@ -31,7 +31,7 @@ travel:
 # The value below must be the prefix of the region to be explored.
 # This means that any region id that a player can discover must
 # start with the value shown below. For example:
-# - ws_region_to_be_explored
-# - wsRegionToBeExplored
-# - wsRegion_to_Be-explored
-regions-prefix: ws
+# - fr_region_to_be_explored
+# - frRegionToBeExplored
+# - frRegion_to_Be-explored
+regions-prefix: fr

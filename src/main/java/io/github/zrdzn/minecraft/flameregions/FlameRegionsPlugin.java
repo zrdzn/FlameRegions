@@ -1,7 +1,6 @@
 package io.github.zrdzn.minecraft.flameregions;
 
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.commands.task.RegionManagerLoader;
 import com.sk89q.worldguard.protection.flags.LocationFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;

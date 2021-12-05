@@ -88,7 +88,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
             return;
         }
 
-        ExploredRegionRepository regionRepository = new ExploredRegionRepository(dataSource);
+        ExploredRegionRepository regionRepository = new ExploredRegionRepository(this.logger, dataSource);
 
         MessageService messageService = new MessageService(this.logger, this.server, this.bundleMap);
 

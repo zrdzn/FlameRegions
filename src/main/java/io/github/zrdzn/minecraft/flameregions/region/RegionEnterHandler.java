@@ -23,8 +23,8 @@ import java.util.Set;
 public class RegionEnterHandler extends FlagValueChangeHandler<String> {
 
     private PluginConfiguration configuration;
-    private RegionRepository repository;
-    private MessageService service;
+    private ExploredRegionService regionService;
+    private MessageService messageService;
 
     protected RegionEnterHandler(Session session) {
         super(session, FlameRegionsPlugin.ENTER_FLAG);
@@ -44,24 +44,25 @@ public class RegionEnterHandler extends FlagValueChangeHandler<String> {
                 continue;
             }
 
-            String regionName = protectedRegion.getFlag(FlameRegionsPlugin.ENTER_FLAG);
-            if (regionName == null) {
-                regionName = protectedRegionId;
+            StringBuilder regionName = new StringBuilder();
+            regionName.append(protectedRegion.getFlag(FlameRegionsPlugin.ENTER_FLAG));
+
+            if (regionName.isEmpty()) {
+                regionName.append(protectedRegionId);
             } else {
-                regionName = ChatColor.translateAlternateColorCodes('&', regionName);
+                regionName.append(ChatColor.translateAlternateColorCodes('&', String.valueOf(regionName)));
             }
 
-            bukkitPlayer.sendMessage(regionName);
+            this.regionService.addRegion(bukkitPlayer.getUniqueId(), protectedRegionId).thenAcceptAsync(added -> {
+                if (added) {
+                    bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
 
-            if (this.repository.addExploredRegionToPlayer(bukkitPlayer.getUniqueId(), protectedRegion)) {
-                bukkitPlayer.playSound(bukkitPlayer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                    Locale locale = bukkitPlayer.locale();
 
-                Locale locale = bukkitPlayer.locale();
-
-                bukkitPlayer.showTitle(Title.title(this.service.getComponent(locale, "title.header", regionName),
-                        this.service.getComponent(locale, "title.footer", regionName)));
-            }
-
+                    bukkitPlayer.showTitle(Title.title(this.messageService.getComponent(locale, "title.header", regionName),
+                        this.messageService.getComponent(locale, "title.footer", regionName)));
+                }
+            });
         }
 
         return true;
@@ -84,21 +85,21 @@ public class RegionEnterHandler extends FlagValueChangeHandler<String> {
     public static class Factory extends Handler.Factory<RegionEnterHandler> {
 
         private final PluginConfiguration configuration;
-        private final RegionRepository repository;
-        private final MessageService service;
+        private final ExploredRegionService regionService;
+        private final MessageService messageService;
 
-        public Factory(PluginConfiguration configuration, RegionRepository repository, MessageService service) {
+        public Factory(PluginConfiguration configuration, ExploredRegionService regionService, MessageService messageService) {
             this.configuration = configuration;
-            this.repository = repository;
-            this.service = service;
+            this.regionService = regionService;
+            this.messageService = messageService;
         }
 
         public RegionEnterHandler create(Session session) {
             RegionEnterHandler regionEnterHandler = new RegionEnterHandler(session);
 
             regionEnterHandler.configuration = this.configuration;
-            regionEnterHandler.repository = this.repository;
-            regionEnterHandler.service = this.service;
+            regionEnterHandler.regionService = this.regionService;
+            regionEnterHandler.messageService = this.messageService;
 
             return regionEnterHandler;
         }

@@ -1,10 +1,12 @@
 package io.github.zrdzn.minecraft.flameregions;
 
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.commands.task.RegionManagerLoader;
 import com.sk89q.worldguard.protection.flags.LocationFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.session.SessionManager;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfiguration;
@@ -13,8 +15,10 @@ import io.github.zrdzn.minecraft.flameregions.datasource.DataSourceParser;
 import io.github.zrdzn.minecraft.flameregions.location.LocationCommand;
 import io.github.zrdzn.minecraft.flameregions.location.LocationMenu;
 import io.github.zrdzn.minecraft.flameregions.message.MessageService;
+import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionService;
+import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionServiceImpl;
 import io.github.zrdzn.minecraft.flameregions.region.RegionEnterHandler;
-import io.github.zrdzn.minecraft.flameregions.region.RegionRepository;
+import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionRepository;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelService;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelTrait;
 import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfiguration;
@@ -82,7 +86,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
             exception.printStackTrace();
         }
 
-        RegionRepository regionRepository = new RegionRepository(this.server, dataSource);
+        ExploredRegionRepository regionRepository = new ExploredRegionRepository(dataSource);
 
         MessageService messageService = new MessageService(this.logger, this.server, this.bundleMap);
 
@@ -103,12 +107,15 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         TravelService travelService = new TravelService(this.logger, travelConfiguration, essentialsApi);
 
-        LocationMenu locationMenu = new LocationMenu(this.server, messageService, pluginConfiguration, regionRepository, travelService);
+        RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        ExploredRegionService regionService = new ExploredRegionServiceImpl(regionRepository, regionContainer);
+
+        LocationMenu locationMenu = new LocationMenu(this.server, messageService, pluginConfiguration, regionService, travelService);
 
         this.getCommand("locations").setExecutor(new LocationCommand(this.logger, locationMenu, messageService));
 
         SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
-        sessionManager.registerHandler(new RegionEnterHandler.Factory(pluginConfiguration, regionRepository, messageService), null);
+        sessionManager.registerHandler(new RegionEnterHandler.Factory(pluginConfiguration, regionService, messageService), null);
 
         TravelTrait travelTrait = new TravelTrait(this.logger, messageService, locationMenu);
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(travelTrait.getClass()).withName("fr-trait-travel"));

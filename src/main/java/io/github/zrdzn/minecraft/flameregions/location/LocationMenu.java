@@ -1,6 +1,7 @@
 package io.github.zrdzn.minecraft.flameregions.location;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -11,7 +12,7 @@ import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
 import io.github.zrdzn.minecraft.flameregions.configuration.PluginConfiguration;
 import io.github.zrdzn.minecraft.flameregions.message.MessageService;
-import io.github.zrdzn.minecraft.flameregions.region.RegionRepository;
+import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionService;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelService;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
@@ -32,17 +33,17 @@ public class LocationMenu {
     private final Server server;
     private final MessageService messageService;
     private final PluginConfiguration configuration;
-    private final RegionRepository repository;
+    private final ExploredRegionService regionService;
     private final TravelService travelService;
 
     private boolean isTravelItem;
 
-    public LocationMenu(Server server, MessageService messageService, PluginConfiguration configuration, RegionRepository repository,
+    public LocationMenu(Server server, MessageService messageService, PluginConfiguration configuration, ExploredRegionService regionService,
                         TravelService travelService) {
         this.server = server;
         this.messageService = messageService;
         this.configuration = configuration;
-        this.repository = repository;
+        this.regionService = regionService;
         this.travelService = travelService;
     }
 
@@ -81,7 +82,8 @@ public class LocationMenu {
                 .lore(this.messageService.getComponentList(locale, "menu.close.lore"))
                 .asGuiItem(event -> menu.close(player)));
 
-        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
+        World world = BukkitAdapter.adapt(player.getWorld());
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(world);
         if (regionManager == null) {
             return false;
         }
@@ -113,7 +115,7 @@ public class LocationMenu {
                 continue;
             }
 
-            if (this.repository.hasPlayerExplored(player.getUniqueId(), protectedRegion)) {
+            if (this.regionService.getRegion(playerId, protectedRegionId, world).join().isPresent()) {
                 item = new ItemStack(Material.FILLED_MAP);
 
                 if (logic && npcLocation != null) {

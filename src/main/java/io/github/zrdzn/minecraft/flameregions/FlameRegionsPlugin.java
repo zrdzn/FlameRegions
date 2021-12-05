@@ -82,7 +82,10 @@ public class FlameRegionsPlugin extends JavaPlugin {
         try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
             statement.executeUpdate();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            this.logger.error("Something went wrong while creating table.", exception);
+            this.pluginManager.disablePlugin(this);
+
+            return;
         }
 
         ExploredRegionRepository regionRepository = new ExploredRegionRepository(dataSource);
@@ -128,8 +131,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
             flagRegistry.register(ENTER_FLAG);
             flagRegistry.register(TRAVEL_LOCATION_FLAG);
         } catch (FlagConflictException exception) {
-            this.logger.error("Failed to register custom flags, check if this custom flag already exists and change it.");
-            exception.printStackTrace();
+            this.logger.error("Failed to register custom flags, check if this custom flag already exists and change it.", exception);
             this.pluginManager.disablePlugin(this);
         }
     }

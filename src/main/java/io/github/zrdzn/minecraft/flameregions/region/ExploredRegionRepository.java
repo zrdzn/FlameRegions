@@ -1,6 +1,7 @@
 package io.github.zrdzn.minecraft.flameregions.region;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,9 +13,11 @@ import java.util.UUID;
 
 public class ExploredRegionRepository {
 
+    private final Logger logger;
     private final HikariDataSource dataSource;
 
-    public ExploredRegionRepository(HikariDataSource dataSource) {
+    public ExploredRegionRepository(Logger logger, HikariDataSource dataSource) {
+        this.logger = logger;
         this.dataSource = dataSource;
     }
 
@@ -24,12 +27,11 @@ public class ExploredRegionRepository {
             statement.setString(1, regionId);
             statement.setString(2, playerId.toString());
 
-            statement.executeUpdate();
+            return (statement.executeUpdate() > 0);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            this.logger.error("Something went wrong while inserting explored region.", exception);
+            return true;
         }
-
-        return true;
     }
 
     public void delete(UUID playerId, String regionId) {
@@ -40,7 +42,7 @@ public class ExploredRegionRepository {
 
             statement.executeUpdate();
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            this.logger.error("Something went wrong while deleting explored region.", exception);
         }
     }
 
@@ -57,7 +59,7 @@ public class ExploredRegionRepository {
 
             return regionNames;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            this.logger.error("Something went wrong while selecting explored regions.", exception);
             return regionNames;
         }
     }

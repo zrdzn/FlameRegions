@@ -27,7 +27,6 @@ public class TravelService {
         this.logger = logger;
         this.travelConfiguration = travelConfiguration;
         this.essentialsApi = essentialsApi;
-
     }
 
     public Optional<Location> getTravelLocation(ProtectedRegion protectedRegion) {
@@ -55,7 +54,7 @@ public class TravelService {
     public void travelPlayer(UUID playerId, ProtectedRegion protectedRegion, double price) {
         Optional<Location> location = this.getTravelLocation(protectedRegion);
         if (location.isEmpty()) {
-            this.logger.error("Travel vector is null.");
+            this.logger.error("Travel vector is null for {}.", protectedRegion.getId());
             return;
         }
 

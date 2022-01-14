@@ -14,6 +14,7 @@ import io.github.zrdzn.minecraft.flameregions.datasource.DataSourceParser;
 import io.github.zrdzn.minecraft.flameregions.location.LocationCommand;
 import io.github.zrdzn.minecraft.flameregions.location.LocationMenu;
 import io.github.zrdzn.minecraft.flameregions.message.MessageService;
+import io.github.zrdzn.minecraft.flameregions.message.MessageServiceImpl;
 import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionRepository;
 import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionService;
 import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionServiceImpl;
@@ -36,6 +37,7 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class FlameRegionsPlugin extends JavaPlugin {
@@ -75,7 +77,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         ExploredRegionRepository regionRepository = new ExploredRegionRepository(this.logger, this.dataSource);
 
-        MessageService messageService = new MessageService(this.logger, this.server, this.bundleMap);
+        MessageService messageService = new MessageServiceImpl(this.logger, this.server, this.bundleMap);
 
         ConfigurationSection travelSection = configuration.getConfigurationSection("travel");
         if (travelSection == null) {
@@ -129,8 +131,12 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
     private void loadBundles() {
         String baseName = "locale/locale";
-        this.bundleMap.put(Locale.forLanguageTag("en-US"), ResourceBundle.getBundle(baseName, Locale.forLanguageTag("en-US")));
-        this.bundleMap.put(Locale.forLanguageTag("pl-PL"), ResourceBundle.getBundle(baseName, Locale.forLanguageTag("pl-PL")));
+        try {
+            this.bundleMap.put(Locale.US, ResourceBundle.getBundle(baseName, Locale.US));
+        } catch (MissingResourceException exception) {
+            this.logger.error("Resource bundle file (locale_en_US.properties) not found in the locale directory.", exception);
+            this.pluginManager.disablePlugin(this);
+        }
     }
 
 }

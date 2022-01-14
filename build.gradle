@@ -48,7 +48,7 @@ dependencies {
     compileOnly 'net.essentialsx:EssentialsX:2.19.1-SNAPSHOT'
 
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.slf4j:slf4j-log4j12:1.7.32'
+    implementation 'org.slf4j:slf4j-log4j12:1.7.33'
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'dev.triumphteam:triumph-gui:3.0.5'
 }

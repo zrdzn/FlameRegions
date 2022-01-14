@@ -51,6 +51,8 @@ public class FlameRegionsPlugin extends JavaPlugin {
     private final PluginManager pluginManager = this.server.getPluginManager();
 
     private HikariDataSource dataSource;
+    private TravelService travelService;
+    private ExploredRegionService regionService;
 
     @Override
     public void onEnable() {
@@ -93,17 +95,17 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         IEssentials essentialsApi = (IEssentials) this.pluginManager.getPlugin("Essentials");
 
-        TravelService travelService = new TravelServiceImpl(this.logger, travelConfiguration, essentialsApi);
+        this.travelService = new TravelServiceImpl(this.logger, travelConfiguration, essentialsApi);
 
         RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        ExploredRegionService regionService = new ExploredRegionServiceImpl(regionRepository, regionContainer);
+        this.regionService = new ExploredRegionServiceImpl(regionRepository, regionContainer);
 
-        LocationMenu locationMenu = new LocationMenu(this.server, messageService, pluginConfiguration, regionService, travelService);
+        LocationMenu locationMenu = new LocationMenu(this.server, messageService, pluginConfiguration, this.regionService, this.travelService);
 
         this.getCommand("locations").setExecutor(new LocationCommand(this.logger, locationMenu, messageService));
 
         SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
-        sessionManager.registerHandler(new RegionEnterHandler.Factory(pluginConfiguration, regionService, messageService), null);
+        sessionManager.registerHandler(new RegionEnterHandler.Factory(pluginConfiguration, this.regionService, messageService), null);
 
         TravelTrait travelTrait = new TravelTrait(this.logger, messageService, locationMenu);
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(travelTrait.getClass()).withName("fr-trait-travel"));
@@ -127,6 +129,14 @@ public class FlameRegionsPlugin extends JavaPlugin {
             this.logger.error("Failed to register custom flags, check if this custom flag already exists and change it.", exception);
             this.pluginManager.disablePlugin(this);
         }
+    }
+
+    public TravelService getTravelService() {
+        return this.travelService;
+    }
+
+    public ExploredRegionService getRegionService() {
+        return this.regionService;
     }
 
     private void loadBundles() {

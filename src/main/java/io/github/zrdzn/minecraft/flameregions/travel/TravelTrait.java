@@ -39,14 +39,12 @@ public class TravelTrait extends Trait {
             return;
         }
 
+        Player player = event.getClicker();
+
         SpeechController speechController = npc.getDefaultSpeechController();
 
         SpeechContext speechContext = new SpeechContext();
-
         speechContext.setTalker(npc.getEntity());
-
-        Player player = event.getClicker();
-
         speechContext.addRecipient((Entity) player);
 
         Locale locale = player.locale();

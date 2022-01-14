@@ -14,10 +14,10 @@ import io.github.zrdzn.minecraft.flameregions.datasource.DataSourceParser;
 import io.github.zrdzn.minecraft.flameregions.location.LocationCommand;
 import io.github.zrdzn.minecraft.flameregions.location.LocationMenu;
 import io.github.zrdzn.minecraft.flameregions.message.MessageService;
+import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionRepository;
 import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionService;
 import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionServiceImpl;
 import io.github.zrdzn.minecraft.flameregions.region.RegionEnterHandler;
-import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionRepository;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelService;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelTrait;
 import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfiguration;
@@ -32,9 +32,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -69,20 +66,6 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         if (dataSource == null) {
             this.logger.error("Something went wrong while connecting to database. Check your database configuration and restart your server after correcting it.");
-            this.pluginManager.disablePlugin(this);
-
-            return;
-        }
-
-        String query = "CREATE TABLE IF NOT EXISTS explored_regions (" +
-            "id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-            "region_name VARCHAR(128) NOT NULL UNIQUE KEY," +
-            "explorer_uuid VARCHAR(36)," +
-            "explorer_name VARCHAR(18));";
-        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.executeUpdate();
-        } catch (SQLException exception) {
-            this.logger.error("Something went wrong while creating table.", exception);
             this.pluginManager.disablePlugin(this);
 
             return;

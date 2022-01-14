@@ -53,6 +53,10 @@ dependencies {
     implementation "dev.triumphteam:triumph-gui:3.0.5"
 }
 
+java {
+    withSourcesJar()
+}
+
 shadowJar {
     archiveFileName = "${archiveBaseName.get()} v${archiveVersion.get()}.jar"
 

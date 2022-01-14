@@ -54,5 +54,7 @@ dependencies {
 }
 
 shadowJar {
-    relocate("dev.triumphteam.gui", "io.github.zrdzn.minecraft.flameregions.gui")
+    archiveFileName = "${archiveBaseName.get()} v${archiveVersion.get()}.jar"
+
+    relocate "dev.triumphteam.gui", "io.github.zrdzn.minecraft.flameregions.gui"
 }

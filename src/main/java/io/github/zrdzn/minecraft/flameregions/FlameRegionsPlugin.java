@@ -19,6 +19,7 @@ import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionService;
 import io.github.zrdzn.minecraft.flameregions.region.ExploredRegionServiceImpl;
 import io.github.zrdzn.minecraft.flameregions.region.RegionEnterHandler;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelService;
+import io.github.zrdzn.minecraft.flameregions.travel.TravelServiceImpl;
 import io.github.zrdzn.minecraft.flameregions.travel.TravelTrait;
 import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfiguration;
 import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfigurationParser;
@@ -89,7 +90,7 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         IEssentials essentialsApi = (IEssentials) this.pluginManager.getPlugin("Essentials");
 
-        TravelService travelService = new TravelService(this.logger, travelConfiguration, essentialsApi);
+        TravelService travelService = new TravelServiceImpl(this.logger, travelConfiguration, essentialsApi);
 
         RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
         ExploredRegionService regionService = new ExploredRegionServiceImpl(regionRepository, regionContainer);

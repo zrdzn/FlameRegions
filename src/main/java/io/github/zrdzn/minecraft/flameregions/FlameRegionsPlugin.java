@@ -98,7 +98,6 @@ public class FlameRegionsPlugin extends JavaPlugin {
             this.pluginManager.disablePlugin(this);
 
             return;
-
         }
 
         TravelConfiguration travelConfiguration = new TravelConfigurationParser().parse(travelSection);

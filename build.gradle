@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'io.github.zrdzn.minecraft'
@@ -42,15 +42,15 @@ repositories {
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT'
-    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.7'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.8'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.6'
     compileOnly 'net.citizensnpcs:citizens:2.0.20-SNAPSHOT'
     compileOnly 'net.essentialsx:EssentialsX:2.19.1-SNAPSHOT'
 
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.slf4j:slf4j-log4j12:1.7.32'
-    implementation 'com.zaxxer:HikariCP:5.0.0'
-    implementation 'dev.triumphteam:triumph-gui:3.0.1'
+    implementation 'org.slf4j:slf4j-log4j12:1.7.33'
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+    implementation 'dev.triumphteam:triumph-gui:3.0.5'
 }
 
 shadowJar {

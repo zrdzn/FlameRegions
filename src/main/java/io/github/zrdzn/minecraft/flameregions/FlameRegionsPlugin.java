@@ -48,6 +48,8 @@ public class FlameRegionsPlugin extends JavaPlugin {
     private final Server server = this.getServer();
     private final PluginManager pluginManager = this.server.getPluginManager();
 
+    private HikariDataSource dataSource;
+
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
@@ -63,16 +65,15 @@ public class FlameRegionsPlugin extends JavaPlugin {
             return;
         }
 
-        HikariDataSource dataSource = new DataSourceParser().parse(databaseSection);
-
-        if (dataSource == null) {
+        this.dataSource = new DataSourceParser().parse(databaseSection);
+        if (this.dataSource == null) {
             this.logger.error("Something went wrong while connecting to database. Check your database configuration and restart your server after correcting it.");
             this.pluginManager.disablePlugin(this);
 
             return;
         }
 
-        ExploredRegionRepository regionRepository = new ExploredRegionRepository(this.logger, dataSource);
+        ExploredRegionRepository regionRepository = new ExploredRegionRepository(this.logger, this.dataSource);
 
         MessageService messageService = new MessageService(this.logger, this.server, this.bundleMap);
 
@@ -104,6 +105,13 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         TravelTrait travelTrait = new TravelTrait(this.logger, messageService, locationMenu);
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(travelTrait.getClass()).withName("fr-trait-travel"));
+    }
+
+    @Override
+    public void onDisable() {
+        if (this.dataSource != null && !this.dataSource.isClosed()) {
+            this.dataSource.close();
+        }
     }
 
     @Override

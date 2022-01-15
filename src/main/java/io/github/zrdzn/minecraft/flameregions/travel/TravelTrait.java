@@ -49,7 +49,7 @@ public class TravelTrait extends Trait {
 
         Locale locale = player.locale();
 
-        speechContext.setMessage(this.service.getString(locale,
+        speechContext.setMessage(this.service.getRawString(locale,
                 "npc.dialog.before_travel_" + ThreadLocalRandom.current().nextInt(1, 4),
                 npc.getName()));
 
@@ -57,7 +57,7 @@ public class TravelTrait extends Trait {
 
         if (!this.menu.show(player.getUniqueId(), true, npc)) {
             this.logger.warn("Could not show location-menu to {}.", player.getName());
-            speechContext.setMessage(this.service.getString(locale, "menu.open_error"));
+            speechContext.setMessage(this.service.getRawString(locale, "menu.open_error"));
             speechController.speak(speechContext);
         }
     }

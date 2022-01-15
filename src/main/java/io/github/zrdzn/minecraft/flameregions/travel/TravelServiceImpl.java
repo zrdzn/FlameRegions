@@ -7,7 +7,10 @@ import io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin;
 import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfiguration;
 import net.ess3.api.IEssentials;
 import net.ess3.api.IUser;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.slf4j.Logger;
 
@@ -21,12 +24,12 @@ public class TravelServiceImpl implements TravelService {
 
     private final Logger logger;
     private final TravelConfiguration travelConfiguration;
-    private final IEssentials essentialsApi;
+    private final Object teleportProvider;
 
-    public TravelServiceImpl(Logger logger, TravelConfiguration travelConfiguration, IEssentials essentialsApi) {
+    public TravelServiceImpl(Logger logger, TravelConfiguration travelConfiguration, Object teleportProvider) {
         this.logger = logger;
         this.travelConfiguration = travelConfiguration;
-        this.essentialsApi = essentialsApi;
+        this.teleportProvider = teleportProvider;
     }
 
     public Optional<Location> getTravelLocation(ProtectedRegion protectedRegion) {
@@ -50,7 +53,6 @@ public class TravelServiceImpl implements TravelService {
         return current.distance(destination.get());
     }
 
-    // TODO Use Vault API and custom teleports if Essentials is disabled in config or not found on the server.
     public void travelPlayer(UUID playerId, ProtectedRegion protectedRegion, double price) {
         Optional<Location> location = this.getTravelLocation(protectedRegion);
         if (location.isEmpty()) {
@@ -58,12 +60,25 @@ public class TravelServiceImpl implements TravelService {
             return;
         }
 
-        IUser user = this.essentialsApi.getUser(playerId);
-        BigDecimal tradePrice = new BigDecimal(price, MathContext.DECIMAL64);
-        Trade trade = new Trade(tradePrice, this.essentialsApi);
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+        Player player = Bukkit.getPlayer(playerId);
+        if (player == null) {
+            this.logger.error("Player is either offline or does not exist {}.", playerId);
+            return;
+        }
 
-        user.getAsyncTeleport().teleportPlayer(user, location.get(), trade, PlayerTeleportEvent.TeleportCause.PLUGIN, completableFuture);
+        if (this.teleportProvider instanceof IEssentials essentials) {
+            IUser user = essentials.getUser(playerId);
+            BigDecimal tradePrice = new BigDecimal(price, MathContext.DECIMAL64);
+            Trade trade = new Trade(tradePrice, essentials);
+            CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+
+            user.getAsyncTeleport().teleportPlayer(user, location.get(), trade, PlayerTeleportEvent.TeleportCause.PLUGIN, completableFuture);
+            return;
+        } else if (this.teleportProvider instanceof Economy vault) {
+            vault.withdrawPlayer(player, price);
+        }
+
+        player.teleport(location.get(), PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
 }

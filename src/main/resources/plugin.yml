@@ -2,7 +2,8 @@ name: FlameRegions
 version: 1.0.0
 main: io.github.zrdzn.minecraft.flameregions.FlameRegionsPlugin
 api-version: 1.17
-depend: [WorldGuard, Citizens, Essentials]
+depend: [WorldGuard, Citizens]
+softdepend: [Essentials, Vault]
 author: zrdzn
 description: Plugin that is integrated with WorldGuard regions and with database that provides explore system and travelling system.
 commands:

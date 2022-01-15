@@ -27,10 +27,12 @@ import io.github.zrdzn.minecraft.flameregions.travel.configuration.TravelConfigu
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.trait.TraitInfo;
 import net.ess3.api.IEssentials;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 
@@ -93,9 +95,24 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
         PluginConfiguration pluginConfiguration = new PluginConfigurationParser().parse(configuration);
 
-        IEssentials essentialsApi = (IEssentials) this.pluginManager.getPlugin("Essentials");
+        IEssentials essentials = null;
+        Economy economy = null;
 
-        this.travelService = new TravelServiceImpl(this.logger, travelConfiguration, essentialsApi);
+        if (this.pluginManager.isPluginEnabled("Essentials")) {
+            this.logger.info("Essentials found, using it as teleportation provider.");
+            essentials = (IEssentials) this.pluginManager.getPlugin("Essentials");
+        } else {
+            this.logger.info("Essentials not found, checking Vault...");
+
+            if (this.pluginManager.isPluginEnabled("Vault")) {
+                this.logger.info("Vault found, using it as teleportation provider.");
+                economy = this.setupEconomy();
+            } else {
+                this.logger.info("None of the plugins above found, using null provider (won't charge for teleportation).");
+            }
+        }
+
+        this.travelService = new TravelServiceImpl(this.logger, travelConfiguration, essentials != null ? essentials : economy);
 
         RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
         this.regionService = new ExploredRegionServiceImpl(regionRepository, regionContainer);
@@ -137,6 +154,15 @@ public class FlameRegionsPlugin extends JavaPlugin {
 
     public ExploredRegionService getRegionService() {
         return this.regionService;
+    }
+
+    private Economy setupEconomy() {
+        RegisteredServiceProvider<Economy> rsp = this.server.getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return null;
+        }
+
+        return rsp.getProvider();
     }
 
     private void loadBundles() {

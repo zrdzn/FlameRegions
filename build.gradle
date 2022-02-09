@@ -54,7 +54,7 @@ dependencies {
     compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
 
     implementation "org.apache.commons:commons-lang3:3.12.0"
-    implementation "org.slf4j:slf4j-log4j12:1.7.35"
+    implementation "org.slf4j:slf4j-log4j12:1.7.36"
     implementation "com.zaxxer:HikariCP:5.0.1"
     implementation "dev.triumphteam:triumph-gui:3.1.1"
     implementation "net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT"
